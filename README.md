@@ -56,7 +56,7 @@ This leads us to the folling 'data per PIN' function:
 pin2dt <- function(pin) {
     ## url from article
     url <- "http://www.cookcountyassessor.com/Property.aspx?mode=details&pin="
-    req <- paste0(url, gsub("-", "", pin), "0000")
+    req <- paste0(url, pin)
     res <- read_html(req)
 
     ## xpath trick from article
@@ -78,11 +78,11 @@ records into a one `data.table` per PIN vector.
 
 ### Model
 
-This is descibed well in the original writeup by Tanya.  We replicate it in R.
+This is descibed well in the original write-up by Tanya.  We replicate it in R.
 
 ### Plots
 
-This is also described well in the original write Tanya. We can also replicate it.
+This is also described well in the original write-up by Tanya. We can also replicate it.
 
 ### Comparison
 
