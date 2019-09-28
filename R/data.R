@@ -14,7 +14,7 @@ library(data.table)
     nodesnames <- gsub("ctl00_phArticle_ctlPropertyDetails_lbl", "", nodesvec)
 }
 
-// given one pin, return corresponding (one-row) data.table
+## given one pin, return corresponding (one-row) data.table
 pin2dt <- function(pin) {
     ## url from article
     url <- "http://www.cookcountyassessor.com/Property.aspx?mode=details&pin="
