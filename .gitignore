@@ -2,3 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+docs/cook-county-property-tax-model.md
+docs/cook-county-property-tax-model_files/
+cook-county-tax-model.Rproj
+.*\.tar\.gz$

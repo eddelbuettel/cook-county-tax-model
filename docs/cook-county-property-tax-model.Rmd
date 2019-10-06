@@ -2,7 +2,7 @@
 title: "Cook County Property Tax Model in R"
 output: 
   github_document:
-    keep_html: TRUE
+    keep_html: true
 ---
 
 ```{r setup, include=FALSE}
@@ -114,4 +114,59 @@ ggpairs(data[HalfBaths<=2 & FullBaths<=4,   # suppresses some warnings from empt
                      discrete="facetbar"),
         lower = list(continuous = "points",
                      combo = "facetdensity"))
+```
+
+### Linear Models
+
+We fit a few first exploratory models. We omitted the summary for brevity here.
+
+```{r fits1}
+## minimal first fit, overall fairly weak
+fit0 <- lm(log(MktValCurrYear) ~ log(SqFt) + log(BldgSqFt) + CentAir + Frpl + log(Age) +
+              FullBaths + HalfBaths + Basement + Attic - 1, data)
+#summary(fit0)
+
+fit1 <- lm(log(MktValCurrYear) ~ log(SqFt) + log(BldgSqFt) + log(Age) + FullBaths + HalfBaths - 1, data)
+#summary(fit1)
+
+fit2 <- lm(log(MktValCurrYear) ~ log(SqFt) + log(BldgSqFt) + log(Age) - 1, data)
+#summary(fit2)
+```
+
+We can also plot the fits:
+
+```{r plotfits1}
+ggFittedVsActual <- function(fitted, actual) {
+    ll <- range(range(fitted), range(actual))
+    ggplot(data.frame(x=fitted, y=actual)) +
+        geom_abline(intercept=0, slope=1, color="darkgrey") + #, style="dotted")
+        geom_point(aes(x=fitted,y=actual),alpha=0.1,color="mediumblue") +
+        coord_fixed(xlim=ll, ylim=ll) +
+        xlab("Model Predictions") + ylab("Actual Values")
+}
+
+
+fit4 <- lm(MktValCurrYear ~ SqFt + BldgSqFt + Age - 1, data)
+summary(fit4)
+ggFittedVsActual(predict(fit4), data[,MktValCurrYear])
+
+fit5 <- lm(log(MktValCurrYear) ~ log(SqFt) + log(BldgSqFt) + Age - 1, data)
+summary(fit5)
+ggFittedVsActual(exp(predict(fit5)), data[,MktValCurrYear])
+```
+
+
+The basic log-linear model (see Tanya's write-up for more; this appears to be
+prescribed by the County) appears to lack a little bit of additional
+structure:
+
+
+Adding a squared term for squared footage reduces this effect and appears to
+control for underprediction for more highly-priced homes:
+
+
+```{r plotfits2}
+fit6 <- lm(log(MktValCurrYear) ~ log(SqFt) + I(log(BldgSqFt)^2) + log(BldgSqFt) + Age - 1, data)
+summary(fit6)
+ggFittedVsActual(exp(predict(fit6)), data[,MktValCurrYear])
 ```

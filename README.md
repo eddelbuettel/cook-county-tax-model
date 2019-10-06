@@ -9,13 +9,17 @@ Notebook](https://github.com/tanyaschlusser/tanyaschlusser.github.io/blob/src/po
 modeling property taxes in her neighborhood. Turns out her neighborhood is next to mine, and Python is close to R so
 figured I should examine / replicate / extend this.
 
-This repo is my current crack at it.
+This repo is my current crack at it. All this _is work in progress_ but a [_draft
+writeup_](https://eddelbuettel.github.io/cook-county-tax-model/index.html) is available.
 
 ### Why?
 
 Instead of having endless discussions comparing Python to R, or numpy to pandas, or base R to data.table to some verses,
 ... why not study different approaches next to each other allowing for comparisons in terms of length, legibility, run
-time, dependencies, maintainability ... or whatever _your_ favorite criterion is?
+time, dependencies, maintainability ... or whatever _your_ favorite criterion is?  This repo hopes
+to eventually one of many that allow us to compare and contrast different approaches in order to
+judge their respective merits, styles and maybe even performance. But that is as of right now a
+fairly distant goal...
 
 ### Resources
 
@@ -82,8 +86,23 @@ This is descibed well in the original write-up by Tanya.  We replicate it in R.
 
 ### Plots
 
-This is also described well in the original write-up by Tanya. We can also replicate it.
+This is also described well in the original write-up by Tanya. We can also replicate it. See [the
+draft writeup](https://eddelbuettel.github.io/cook-county-tax-model/index.html) for more.
 
 ### Comparison
 
 TBD
+
+### Author 
+
+Code in this repo was written by Dirk Eddelbuettel
+
+### License
+
+GPL (>= 2)
+
+### Credits
+
+This would not have gotten started and done without [the prior
+work](http://tanyaschlusser.github.io/posts/property-tax-cook-county/) done by [Tanya
+Schlusser](http://tanyaschlusser.github.io/).
