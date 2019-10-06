@@ -4,8 +4,8 @@
 ##  https://maps.cookcountyil.gov/cookviewer
 ##  http://www.cookcountyassessor.com/Property.aspx?mode=details&pin=15122020270000
 
-library(rvest)
-library(data.table)
+##library(rvest)
+##library(data.table)
 
 .simpleTest <- function() {
     page <- read_html("http://www.cookcountyassessor.com/Property.aspx?mode=details&pin=16063200610000")
