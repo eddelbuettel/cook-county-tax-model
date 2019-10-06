@@ -3,6 +3,7 @@
 
 library(data.table)
 library(ggplot2)
+library(GGally)
 data <- fread("data/riverforest.csv")
 
 nm <- names(data)
@@ -17,19 +18,37 @@ data[, `:=`(MktValCurrYear       = as.numeric(gsub("[$,]", "", MktValCurrYear)),
             AsdValTotalFirstPass = as.numeric(gsub("[$,]", "", AsdValTotalFirstPass)),
             SqFt                 = as.numeric(gsub("[,]", "", SqFt)),
             BldgSqFt             = as.numeric(gsub("[,]", "", BldgSqFt)),
-            CentAir              = ifelse(CentAir == "Yes", 1L, 0L),
-            Frpl                 = as.integer(Frpl),
+            CentAir              = as.factor(ifelse(CentAir == "Yes", 1L, 0L)),
+            Frpl                 = as.factor(as.integer(Frpl)),
             Age                  = as.integer(Age),
-            FullBaths            = as.integer(FullBaths),
-            HalfBaths            = as.integer(HalfBaths),
+            FullBaths            = as.factor(as.integer(FullBaths)),
+            HalfBaths            = as.factor(as.integer(HalfBaths)),
             Basement             = as.factor(Basement),
             Garage               = as.factor(Garage),
             Attic                = as.factor(Attic),
             Use                  = as.factor(Use)
             )]
+data[, `:=`(Basement  = stats::reorder(Basement, MktValCurrYear, FUN=median),
+            Attic     = stats::reorder(Attic, MktValCurrYear, FUN=median))]
 data[, `:=`(Basement  = stats::relevel(Basement, "None"),
             Attic     = stats::relevel(Attic, "None"))]
 data
+
+
+## histogram + density + rug
+ggplot(data, aes(x=MktValCurrYear)) +
+    geom_histogram(aes(y=..density..), bins=40, color="darkgrey", fill="lightblue") +
+    geom_density(color="darkblue") + geom_rug(alpha=0.1)
+
+
+## pairs -- CentAir,
+ggpairs(data[, .(SqFt, BldgSqFt, Frpl, Age, FullBaths, HalfBaths, MktValCurrYear)],
+        mapping = aes(alpha = 0.001),
+        diag = list(continuous="densityDiag"),
+        upper = list(continuous = "points",
+                     discrete="facetbar"),
+        lower = list(continuous = "points",
+                     combo = "facetdensity"))
 
 ## minimal first fit, overall fairly weak
 fit0 <- lm(log(MktValCurrYear) ~ log(SqFt) + log(BldgSqFt) + CentAir + Frpl + log(Age) +
@@ -80,7 +99,7 @@ fit4 <- lm(MktValCurrYear ~ SqFt + BldgSqFt + Age - 1, data)
 summary(fit4)
 ggFittedVsActual(predict(fit4), data[,MktValCurrYear])
 
-fit5 <- lm(log(MktValCurrYear) ~ log(SqFt) + log(BldgSqFt) + Age - 1, data)
+fit5 <- lm(log(MktValCurrYear) ~ log(SqFt) + 0*I(log(BldgSqFt)^2) + log(BldgSqFt) + Age - 1, data)
 summary(fit5)
 ggFittedVsActual(exp(predict(fit5)), data[,MktValCurrYear])
 
