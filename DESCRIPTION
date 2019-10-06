@@ -1,0 +1,17 @@
+Package: ccptm
+Type: Package
+Title: Cook Country Property Tax Model
+Version: 0.0.1
+Date: 2019-10-05
+Author: Dirk Eddelbuettel
+Maintainer: Dirk Eddelbuettel <edd@debian.org>
+Description: We use Cook County, IL, property tax data to model the property taxes a function of
+ available data on properties. This analysis is an R implementation of the work described in the
+ excellent original blog post (and associate Python notebook) by Tanya Schlusser at
+ <http://tanyaschlusser.github.io/posts/property-tax-cook-county/>.
+URL: https://github.com/eddelbuettel/ccptm
+License: GPL (>= 2)
+Encoding: UTF-8
+Depends: R (>= 3.5.0)
+Imports: xml2, rvest, data.table, ggplot2
+RoxygenNote: 6.1.1
