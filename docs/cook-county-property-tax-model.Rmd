@@ -73,7 +73,7 @@ data[]
 ### Initial Plot
 
 The market value and assed value columns are linearly dependent via a simple '10x'
-multiplication. We will focos the `MktValCurrYear` column, either of the assessed value columns
+multiplication. We will focus the `MktValCurrYear` column, either of the assessed value columns
 could be used equally well.
 
 We start with a simple histogram plus density estimate and added rug plot of data points (using
@@ -170,3 +170,90 @@ fit6 <- lm(log(MktValCurrYear) ~ log(SqFt) + I(log(BldgSqFt)^2) + log(BldgSqFt) 
 summary(fit6)
 ggFittedVsActual(exp(predict(fit6)), data[,MktValCurrYear])
 ```
+
+
+### Additional Variables: Attic ?
+
+#### Versus MarketValue
+
+A slight trend towards higher values with living area attics:
+
+```{r attic1}
+attic <- data[, .(Attic, MktValCurrYear)]
+ggplot(attic, aes(y=MktValCurrYear, x=Attic, color=Attic)) +
+    geom_boxplot(notch=TRUE) + geom_jitter(position=position_jitter(0.25), cex=0.75, alpha=0.5) +
+    coord_flip() + theme(legend.position = "none")
+```
+
+
+#### Residuals I
+
+```{r attic2}
+attic2 <- data[, .(Attic, Resid=resid(fit4))]
+ggplot(attic2, aes(y=Resid, x=Attic, color=Attic)) +
+    geom_boxplot(notch=TRUE) + geom_jitter(position=position_jitter(0.25), cex=0.75, alpha=0.5) +
+    coord_flip() + theme(legend.position = "none")
+```
+
+#### Residuals II
+
+```{r attic3}
+attic3 <- data[, .(Attic, Resid=exp(resid(fit5)))]
+ggplot(attic3, aes(y=Resid, x=Attic, color=Attic)) +
+    geom_boxplot(notch=TRUE) + geom_jitter(position=position_jitter(0.25), cex=0.75, alpha=0.5) +
+    coord_flip() + theme(legend.position = "none")
+```
+
+#### Improved Fits?
+
+So lets reduces the five-valued factor variable into just two values:  with or without attic.
+
+```{r fitsWithAttic}
+data[, finishedAttic := grepl("Living", as.character(Attic))]
+fit4a <- lm(MktValCurrYear ~ SqFt + BldgSqFt + Age + finishedAttic - 1, data)
+summary(fit4a)
+
+fit5a <- lm(log(MktValCurrYear) ~ log(SqFt) + log(BldgSqFt) + Age + finishedAttic - 1, data)
+summary(fit5a)
+```
+
+It does not seem to add much value beyond what is already covered by square
+footage and building square footage.
+
+
+### Additional Variables: Basement?
+
+#### Versus MarketValue
+
+```{r bsmt1}
+bsmt <- data[, .(Basement, MktValCurrYear)]
+ggplot(bsmt, aes(y=MktValCurrYear, x=Basement, color=Basement)) +
+    geom_boxplot(notch=TRUE) + geom_jitter(position=position_jitter(0.25), cex=0.75, alpha=0.5) +
+    coord_flip() + theme(legend.position = "none")
+```
+
+#### Residuals I
+
+```{r bsmt2}
+bsmt2 <- data[, .(Basement, Resid=resid(fit4))]
+ggplot(bsmt2, aes(y=Resid, x=Basement, color=Basement)) +
+    geom_boxplot(notch=TRUE) + geom_jitter(position=position_jitter(0.25), cex=0.75, alpha=0.5) +
+    coord_flip() + theme(legend.position = "none")
+```
+
+#### Residuals II
+
+```{r bsmt3}
+bsmt3 <- data[, .(Basement, Resid=exp(resid(fit5)))]
+ggplot(bsmt3, aes(y=Resid, x=Basement, color=Basement)) +
+    geom_boxplot(notch=TRUE) + geom_jitter(position=position_jitter(0.25), cex=0.75, alpha=0.5) +
+    coord_flip() + theme(legend.position = "none")
+```
+
+The results appear counter-intuitive: higher value without a basement? Tanya
+discusses this a little bit.  One angle also is that there are very few
+property without a basement.  The negative coefficient can be seen in light
+of the added contribution to the other variable: an added basement, when
+holding square footage constant, actually _takes away_ from non-basement
+living space which could explain the sign of the coefficient.  Overall once
+again a variable which we may keep excluded.
