@@ -1,0 +1,117 @@
+---
+title: "Cook County Property Tax Model in R"
+output: 
+  github_document:
+    keep_html: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### What is it?
+
+A while back [Tanya Schlusser](http://tanyaschlusser.github.io/) published an [excellent blog
+post](http://tanyaschlusser.github.io/posts/property-tax-cook-county/) along with a [very
+accomplished Python
+Notebook](https://github.com/tanyaschlusser/tanyaschlusser.github.io/blob/src/posts/property-tax-cook-county.ipynb)
+modeling property taxes in her neighborhood. Turns out her neighborhood is next to mine, and Python
+is close to R so figured I should examine / replicate / extend this.
+
+This repo, package and write-up are my current crack at it. See the
+[README.md](https://github.com/eddelbuettel/cook-county-tax-model) for some background. We bundled
+the code in an R package (in the same repo) as packages are a good way to bundle up code and data.
+
+Here, we use a pre-made csv file (or, rather, data.frame resulting from reading it). The steps from
+getting initial Property Index Number (PIN) data and accumulation of per-property data given each
+PIN are described at the repo.
+
+### Data
+
+```{r data}
+library(ccptm)                          # load package
+suppressMessages({
+    library(data.table)                 # data manipulation
+    library(ggplot2)                    # plotting
+    library(GGally)                     # additional pairs plot
+    })
+data(riverforest)  # our sample from River Forest, IL -- raw
+
+data <- data.table(riverforest)
+
+## shorten some column names
+nm <- names(data)
+setnames(data, nm, gsub("^Prop", "", nm))
+setnames(data, nm, gsub("^Char", "", nm))
+setnames(data, nm, gsub("^Info", "", nm))
+
+## minimal transformation
+data[, `:=`(MktValCurrYear       = as.numeric(gsub("[$,]", "", MktValCurrYear)),
+            MktValPrevYear       = as.numeric(gsub("[$,]", "", MktValPrevYear)),
+            AsdValTotalCertified = as.numeric(gsub("[$,]", "", AsdValTotalCertified)),
+            AsdValTotalFirstPass = as.numeric(gsub("[$,]", "", AsdValTotalFirstPass)),
+            SqFt                 = as.numeric(gsub("[,]", "", SqFt)),
+            BldgSqFt             = as.numeric(gsub("[,]", "", BldgSqFt)),
+            CentAir              = as.factor(ifelse(CentAir == "Yes", 1L, 0L)),
+            Frpl                 = as.ordered(as.integer(Frpl)),
+            Age                  = as.integer(Age),
+            FullBaths            = as.ordered(as.integer(FullBaths)),
+            HalfBaths            = as.ordered(as.integer(HalfBaths)),
+            Basement             = as.factor(Basement),
+            Garage               = as.factor(Garage),
+            Attic                = as.factor(Attic),
+            Use                  = as.factor(Use)
+            )]
+## re-order / re-level data
+data[, `:=`(Basement  = stats::reorder(Basement, MktValCurrYear, FUN=median),
+            Attic     = stats::reorder(Attic, MktValCurrYear, FUN=median))]
+data[, `:=`(Basement  = stats::relevel(Basement, "None"),
+            Attic     = stats::relevel(Attic, "None"))]
+data[]
+```
+
+### Initial Plot
+
+The market value and assed value columns are linearly dependent via a simple '10x'
+multiplication. We will focos the `MktValCurrYear` column, either of the assessed value columns
+could be used equally well.
+
+We start with a simple histogram plus density estimate and added rug plot of data points (using
+alpha blending to account for very high density density in the middle price range).m
+
+```{r histplus}
+## histogram + density + rug
+ggplot(data, aes(x=MktValCurrYear)) +
+    geom_histogram(aes(y=..density..), bins=40, color="darkgrey", fill="lightblue") +
+    geom_density(color="darkblue") + geom_rug(alpha=0.1)
+```
+
+### Scatter Plot
+
+Several additional variables are of interest. The following pairs plot show several of them. 
+
+We split this into two plots to not scale each pairs-plot cell down by too much.
+
+```{r scatter1}
+## pairs
+## Frpl, FullBaths, HalfBaths, MktValCurrYear) -- CentAir,
+ggpairs(data[, .(MktValCurrYear, SqFt, BldgSqFt, Age)],
+        diag = list(continuous="densityDiag"),
+        upper = list(continuous = wrap("points", size=0.5, alpha=0.1),
+                     discrete="facetbar"),
+        lower = list(continuous = wrap("points", size=0.5, alpha=0.1),
+                     combo = "facetdensity"))
+```
+
+```{r scatter2}
+## pairs
+## ,
+ggpairs(data[HalfBaths<=2 & FullBaths<=4,   # suppresses some warnings from empty cells
+             .(MktValCurrYear, Frpl, FullBaths, HalfBaths, CentAir)],
+        mapping = aes(alpha = 0.001),
+        diag = list(continuous="densityDiag"),
+        upper = list(continuous = "points",
+                     discrete="facetbar"),
+        lower = list(continuous = "points",
+                     combo = "facetdensity"))
+```
