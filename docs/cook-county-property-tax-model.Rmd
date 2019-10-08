@@ -257,3 +257,8 @@ of the added contribution to the other variable: an added basement, when
 holding square footage constant, actually _takes away_ from non-basement
 living space which could explain the sign of the coefficient.  Overall once
 again a variable which we may keep excluded.
+
+### Summary
+
+We present a simple model of per-property attribute explaining the assessed
+value as a proxy for market value.

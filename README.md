@@ -9,7 +9,7 @@ Notebook](https://github.com/tanyaschlusser/tanyaschlusser.github.io/blob/src/po
 modeling property taxes in her neighborhood. Turns out her neighborhood is next to mine, and Python is close to R so
 figured I should examine / replicate / extend this.
 
-This repo is my current crack at it. All this _is work in progress_ but a [_draft
+This repo is my current crack at it. This _is very much work in progress_ but a [_draft
 writeup_](https://eddelbuettel.github.io/cook-county-tax-model/index.html) is available.
 
 ### Why?
@@ -82,7 +82,8 @@ records into a one `data.table` per PIN vector.
 
 ### Model
 
-This is descibed well in the original write-up by Tanya.  We replicate it in R.
+This is descibed well in the original write-up by Tanya.  We replicate it in R. See the [(work in
+progress) draft write-up](https://eddelbuettel.github.io/cook-county-tax-model/index.html)
 
 ### Plots
 
