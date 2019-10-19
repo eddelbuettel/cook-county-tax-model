@@ -94,6 +94,10 @@ draft writeup](https://eddelbuettel.github.io/cook-county-tax-model/index.html) 
 
 TBD
 
+### Status
+
+Functional but still somewhat raw
+
 ### Author 
 
 Code in this repo was written by Dirk Eddelbuettel

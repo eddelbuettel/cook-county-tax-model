@@ -29,7 +29,7 @@ PIN are described at the repo.
 ### Data
 
 ```{r data}
-library(ccptm)                          # load package
+library(ccptm)                          # load this package
 suppressMessages({
     library(data.table)                 # data manipulation
     library(ggplot2)                    # plotting
@@ -186,7 +186,7 @@ ggplot(attic, aes(y=MktValCurrYear, x=Attic, color=Attic)) +
 ```
 
 
-#### Residuals I
+#### Residuals: Linear Model
 
 ```{r attic2}
 attic2 <- data[, .(Attic, Resid=resid(fit4))]
@@ -195,7 +195,7 @@ ggplot(attic2, aes(y=Resid, x=Attic, color=Attic)) +
     coord_flip() + theme(legend.position = "none")
 ```
 
-#### Residuals II
+#### Residuals: Log-linear Model
 
 ```{r attic3}
 attic3 <- data[, .(Attic, Resid=exp(resid(fit5)))]
@@ -232,7 +232,7 @@ ggplot(bsmt, aes(y=MktValCurrYear, x=Basement, color=Basement)) +
     coord_flip() + theme(legend.position = "none")
 ```
 
-#### Residuals I
+#### Residuals: Linear Model
 
 ```{r bsmt2}
 bsmt2 <- data[, .(Basement, Resid=resid(fit4))]
@@ -241,7 +241,7 @@ ggplot(bsmt2, aes(y=Resid, x=Basement, color=Basement)) +
     coord_flip() + theme(legend.position = "none")
 ```
 
-#### Residuals II
+#### Residuals: Log-linear Model
 
 ```{r bsmt3}
 bsmt3 <- data[, .(Basement, Resid=exp(resid(fit5)))]
@@ -260,5 +260,8 @@ again a variable which we may keep excluded.
 
 ### Summary
 
-We present a simple model of per-property attribute explaining the assessed
-value as a proxy for market value.
+We present a simple R implementation of a model of per-property attributes explaining the
+assessed value as a proxy for market value. It replicates the analysis in the [original
+writeup](http://tanyaschlusser.github.io/posts/property-tax-cook-county/) by [Tanya
+Schlusser](http://tanyaschlusser.github.io/) on new data obtained with additional data
+fetching code included with our model.
