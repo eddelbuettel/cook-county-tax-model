@@ -96,7 +96,8 @@ TBD
 
 ### Status
 
-Functional but still somewhat raw
+Functional but still somewhat raw as seen in [_draft
+writeup_](https://eddelbuettel.github.io/cook-county-tax-model/index.html).
 
 ### Author 
 
